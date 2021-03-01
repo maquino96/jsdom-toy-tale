@@ -3,7 +3,7 @@ let addToy = false;
 document.addEventListener("DOMContentLoaded", () => {
   const addBtn = document.querySelector("#new-toy-btn");
   const toyFormContainer = document.querySelector(".container");
-  
+  const toyCollection = document.querySelector('div#toy-collection')
   
   addBtn.addEventListener("click", () => {
     // hide & seek with the form
@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <button class="like-btn">Like <3</button>
     `
 
-    const toyCollection = document.querySelector('div#toy-collection')
+   
     toyCollection.append(div)
   }
 
@@ -70,7 +70,29 @@ document.addEventListener("DOMContentLoaded", () => {
     event.target.reset() 
 
   })
+  toyCollection.addEventListener('click',function(event){
+    if(event.target.className === 'like-btn'){
+      const closeCard = event.target.closest("div.card")
+      const pTag = closeCard.querySelector("p")
+      const currentLikes = parseInt(pTag.textContent)
+      const newLikeObj = { likes: currentLikes + 1}
 
+      
+      fetch(`http://localhost:3000/toys/${closeCard.dataset.id}`, {
+        method: "PATCH",
+
+        headers: { "Content-Type": "application/json",
+                    "Accept": "application/json"
+      },
+      body: JSON.stringify(newLikeObj)
+      })
+
+      .then(response => response.json())
+      .then(data => pTag.textContent = `${data.likes} likes` )
+
+    }
+
+  })
 
   renderAllToys()
 
